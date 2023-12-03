@@ -1,37 +1,35 @@
 
 
-const getQueryResults = async () => {
+const query1 = `
+PREFIX healthcare: <http://www.semanticweb.org/healthcare/ontology#>
 
-    var header = {
-        "Content-Type": "application/sparql-query",
-        "Authorization": "Basic " + btoa("SERAdmin:admin@ser531")
-    };
-
-    var body = `
-    SELECT DISTINCT ?subject_0
-    FROM <tag:stardog:api:context:default>
-    FROM <tag:stardog:designer:Healthcare:model>
-    FROM <tag:stardog:designer:Healthcare:data:cleaned_dataset>
-    FROM <tag:stardog:designer:Healthcare:data:covid_info>
-    FROM <urn:stardog:marketplace:tutorials:music:1.0>
-    FROM <stardog-tutorial:music:music_data>
-    FROM <stardog-tutorial-music:music_schema>
-    WHERE {
-    {
-        ?subject_0 a <http://www.semanticweb.org/healthcare/ontology#CovidStats> .
-        ?subject_0 <http://www.semanticweb.org/healthcare/ontology#covid_intubation_status> ?dat_0 . FILTER(STR(?dat_0) = "1") .
-    }
-    }
-    `;
-
-    return fetch(
-        `https://sd-90a47ad8.stardog.cloud:5820/healthcare/query`, 
-        { method: 'POST', headers: header, body: body }
-    );
+select distinct ?id ?name ?dob ?ssn
+FROM <tag:stardog:api:context:default>
+FROM <tag:stardog:designer:SER531:model>
+FROM <tag:stardog:designer:SER_531:data:cleaned_data_organizations>
+FROM <tag:stardog:designer:SER_531:data:cleaned_data_modality>
+FROM <tag:stardog:designer:SER_531:data:cleaned_data_medications>
+FROM <tag:stardog:designer:SER_531:data:cleaned_data_careplans>
+FROM <tag:stardog:designer:SER_531:data:cleaned_data_bodysite_studies>
+FROM <tag:stardog:designer:SER_531:data:cleaned_data_procedures>
+FROM <tag:stardog:designer:SER_531:data:cleaned_data_encounters>
+FROM <tag:stardog:designer:SER_531:data:cleaned_data_imaging_studies>
+FROM <tag:stardog:designer:SER_531:data:cleaned_data_patients>
+FROM <tag:stardog:designer:SER_531:data:cleaned_data_patients_personal_infromation>
+WHERE {
+{
+    ?patient a healthcare:Patient ;
+            healthcare:has_Patient_ID ?id ;
+            healthcare:has_personal_info ?info .
+    ?info healthcare:has_Patient_Name ?name ;
+        healthcare:has_patient_DOB ?dob ;
+        healthcare:has_patient_SSN ?ssn .
 }
+}
+`;
 
 const QueryService = {
-    getQueryResults,
+    query1,
 };
 
 export default QueryService;
